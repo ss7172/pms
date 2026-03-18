@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../api/client';
-import { useAuth } from '../../context/AuthContext';
 import Navbar from '../common/Navbar';
 
 export default function Dashboard() {
@@ -10,8 +9,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const { user, logout } = useAuth();
-
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {

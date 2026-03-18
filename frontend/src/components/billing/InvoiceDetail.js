@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client';
 import Navbar from '../common/Navbar';
+
 
 export default function InvoiceDetail() {
   const { id } = useParams();
@@ -21,17 +22,19 @@ export default function InvoiceDetail() {
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [processingPayment, setProcessingPayment] = useState(false);
 
-  const fetchRecord = async () => {
-    try {
-      const data = await api.get(`/billing/${id}`);
-      setRecord(data.billing_record);
-    } catch (err) {
-      setError('Failed to load invoice');
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchRecord = useCallback(async () => {
+  try {
+    const data = await api.get(`/billing/${id}`);
+    setRecord(data.billing_record);
+  } catch (err) {
+    setError('Failed to load invoice');
+  } finally {
+    setLoading(false);
+  }
+}, [id]);
 
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchRecord();
   }, [id]);

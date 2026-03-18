@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/client';
 import Navbar from '../common/Navbar';
 import { useAuth } from '../../context/AuthContext';
+
 
 const STATUS_COLORS = {
   scheduled: { bg: '#ebf8ff', color: '#2b6cb0' },
@@ -21,22 +22,22 @@ export default function TodaySchedule() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const fetchAppointments = async () => {
-    setLoading(true);
-    try {
-      const data = await api.get('/appointments/today');
-      // Doctors only see their own appointments
-      const filtered = user.role === 'doctor'
-        ? data.appointments.filter(a => a.doctor_name === user.full_name)
-        : data.appointments;
-      setAppointments(filtered);
-    } catch (err) {
-      setError('Failed to load appointments');
-    } finally {
-      setLoading(false);
-    }
-  };
+const fetchAppointments = useCallback(async () => {
+  setLoading(true);
+  try {
+    const data = await api.get('/appointments/today');
+    const filtered = user.role === 'doctor'
+      ? data.appointments.filter(a => a.doctor_name === user.full_name)
+      : data.appointments;
+    setAppointments(filtered);
+  } catch (err) {
+    setError('Failed to load appointments');
+  } finally {
+    setLoading(false);
+  }
+}, [user.role, user.full_name]);
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchAppointments();
   }, []);
