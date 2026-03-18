@@ -3,8 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import LoginPage from './components/auth/LoginPage';
 import Dashboard from './components/dashboard/Dashboard';
+import PatientList from './components/patients/PatientList';
 
-// Redirect to correct landing page based on role
 function RoleBasedRedirect() {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
@@ -26,7 +26,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          {/* Placeholder — TodaySchedule built Day 5 */}
+          <Route
+            path="/patients"
+            element={
+              <ProtectedRoute roles={['admin', 'front_desk', 'doctor']}>
+                <PatientList />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/appointments/today"
             element={
