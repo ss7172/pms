@@ -8,6 +8,8 @@ import PatientForm from './components/patients/PatientForm';
 import PatientProfile from './components/patients/PatientProfile';
 import TodaySchedule from './components/appointments/TodaySchedule';
 import BookAppointment from './components/appointments/BookAppointment';
+import VisitForm from './components/visits/VisitForm';
+  
 
 function RoleBasedRedirect() {
   const { user } = useAuth();
@@ -83,7 +85,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="/visits/new"
+            element={
+              <ProtectedRoute roles={['doctor']}>
+                <VisitForm />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={<RoleBasedRedirect />} />
         </Routes>
       </BrowserRouter>

@@ -69,7 +69,7 @@ export default function TodaySchedule() {
       ];
     }
     if (status === 'in_progress' && role === 'doctor') {
-      return [{ label: 'Complete Visit', status: 'completed', color: '#38a169' }];
+        return [{ label: 'Write Visit Notes', isLink: true, path: `/visits/new?appointment_id=${appointment.id}`, color: '#38a169' }];
     }
     return [];
   };
@@ -166,20 +166,34 @@ export default function TodaySchedule() {
                       <td style={styles.td}>
                         <div style={styles.actions}>
                           {actions.map(action => (
-                            <button
-                              key={action.status}
-                              onClick={() => updateStatus(appt.id, action.status)}
-                              disabled={updatingId === appt.id}
-                              style={{
-                                ...styles.actionBtn,
-                                borderColor: action.color,
-                                color: action.color,
-                                opacity: updatingId === appt.id ? 0.5 : 1,
-                              }}
-                            >
-                              {action.label}
-                            </button>
-                          ))}
+                            action.isLink ? (
+                                <button
+                                key={action.path}
+                                onClick={() => navigate(action.path)}
+                                style={{
+                                    ...styles.actionBtn,
+                                    borderColor: action.color,
+                                    color: action.color,
+                                }}
+                                >
+                                {action.label}
+                                </button>
+                            ) : (
+                                <button
+                                key={action.status}
+                                onClick={() => updateStatus(appt.id, action.status)}
+                                disabled={updatingId === appt.id}
+                                style={{
+                                    ...styles.actionBtn,
+                                    borderColor: action.color,
+                                    color: action.color,
+                                    opacity: updatingId === appt.id ? 0.5 : 1,
+                                }}
+                                >
+                                {action.label}
+                                </button>
+                            )
+                            ))}
                         </div>
                       </td>
                     </tr>
