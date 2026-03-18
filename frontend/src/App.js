@@ -21,24 +21,8 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/appointments/book"
-          element={
-            <ProtectedRoute roles={['admin', 'front_desk']}>
-              <BookAppointment />
-            </ProtectedRoute>
-          }
-          />
-          <Route
-            path="/patients/:id"
-            element={
-              <ProtectedRoute roles={['admin', 'front_desk', 'doctor']}>
-              <PatientProfile />
-            </ProtectedRoute>
-          }
-          />
-
           <Route path="/login" element={<LoginPage />} />
+
           <Route
             path="/dashboard"
             element={
@@ -47,6 +31,8 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* PATIENTS — static routes before dynamic */}
           <Route
             path="/patients"
             element={
@@ -56,11 +42,11 @@ export default function App() {
             }
           />
           <Route
-              path="/patients/new"
-              element={
-                <ProtectedRoute roles={['admin', 'front_desk']}>
-                  <PatientForm />
-                </ProtectedRoute>
+            path="/patients/new"
+            element={
+              <ProtectedRoute roles={['admin', 'front_desk']}>
+                <PatientForm />
+              </ProtectedRoute>
             }
           />
           <Route
@@ -71,15 +57,33 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-            <Route
-              path="/appointments/today"
-              element={
-                <ProtectedRoute roles={['doctor', 'front_desk', 'admin']}>
-                  <TodaySchedule />
-                </ProtectedRoute>
-        }
-
+          <Route
+            path="/patients/:id"
+            element={
+              <ProtectedRoute roles={['admin', 'front_desk', 'doctor']}>
+                <PatientProfile />
+              </ProtectedRoute>
+            }
           />
+
+          {/* APPOINTMENTS — static routes before dynamic */}
+          <Route
+            path="/appointments/today"
+            element={
+              <ProtectedRoute roles={['doctor', 'front_desk', 'admin']}>
+                <TodaySchedule />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/appointments/book"
+            element={
+              <ProtectedRoute roles={['admin', 'front_desk']}>
+                <BookAppointment />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/" element={<RoleBasedRedirect />} />
         </Routes>
       </BrowserRouter>
