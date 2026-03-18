@@ -7,7 +7,9 @@ def register_blueprints(app: Flask) -> None:
     from app.routes.auth import auth_bp
     from app.routes.patients import patients_bp
     from app.routes.departments import departments_bp
+    from app.routes.doctors import doctors_bp
 
     app.register_blueprint(auth_bp, url_prefix='/api/v1/auth')
     app.register_blueprint(patients_bp, url_prefix='/api/v1/patients')
     app.register_blueprint(departments_bp, url_prefix='/api/v1/departments')
+    app.register_blueprint(doctors_bp, url_prefix='/api/v1/doctors')
