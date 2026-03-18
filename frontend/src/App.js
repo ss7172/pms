@@ -6,6 +6,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import PatientList from './components/patients/PatientList';
 import PatientForm from './components/patients/PatientForm';
 import PatientProfile from './components/patients/PatientProfile';
+import TodaySchedule from './components/appointments/TodaySchedule';
 
 function RoleBasedRedirect() {
   const { user } = useAuth();
@@ -61,15 +62,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/appointments/today"
-            element={
-              <ProtectedRoute roles={['doctor', 'front_desk', 'admin']}>
-                <div style={{ padding: '2rem' }}>
-                  Today's Schedule — coming Day 5
-                </div>
-              </ProtectedRoute>
-            }
+            <Route
+              path="/appointments/today"
+              element={
+                <ProtectedRoute roles={['doctor', 'front_desk', 'admin']}>
+                  <TodaySchedule />
+                </ProtectedRoute>
+        }
+
           />
           <Route path="/" element={<RoleBasedRedirect />} />
         </Routes>
