@@ -6,7 +6,12 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from app import create_app
 from app.extensions import db
-from app.models import User, Department, Doctor
+
+from datetime import date, time
+from app.models import (
+    User, Department, Doctor, Patient,
+    Appointment, Visit, BillingRecord, BillingItem, PatientDocument
+)
 
 
 def seed_departments() -> dict:
@@ -83,6 +88,85 @@ def seed_doctors(users: dict, departments: dict) -> None:
         print(f"  Created doctor: {data['user'].full_name} → {data['department'].name}")
 
 
+
+def seed_patients() -> dict:
+    """Create 3 demo patients. Returns phone→object map."""
+    patients_data = [
+        {
+            'first_name': 'Ramesh', 'last_name': 'Nayak',
+            'date_of_birth': date(1975, 4, 12), 'gender': 'male',
+            'phone': '9437001001', 'blood_group': 'B+',
+            'address': 'MG Road, Cuttack', 'emergency_contact': 'Sunita Nayak - 9437001002',
+        },
+        {
+            'first_name': 'Priya', 'last_name': 'Sahoo',
+            'date_of_birth': date(1990, 8, 22), 'gender': 'female',
+            'phone': '9437002001', 'blood_group': 'O+',
+            'address': 'Badambadi, Cuttack', 'emergency_contact': 'Suresh Sahoo - 9437002002',
+        },
+        {
+            'first_name': 'Bikram', 'last_name': 'Das',
+            'date_of_birth': date(1965, 1, 5), 'gender': 'male',
+            'phone': '9437003001', 'blood_group': 'A+',
+            'address': 'College Square, Cuttack', 'emergency_contact': 'Mita Das - 9437003002',
+        },
+    ]
+
+    patients = {}
+    for data in patients_data:
+        patient = Patient(**data)
+        db.session.add(patient)
+        patients[data['phone']] = patient
+        print(f"  Created patient: {data['first_name']} {data['last_name']}")
+
+    return patients
+
+
+def seed_appointments(patients: dict, doctors: list, departments: dict) -> list:
+    """Create 3 demo appointments — one per patient."""
+    dr_mohanty = doctors[0]
+    dr_patel = doctors[1]
+
+    appointments_data = [
+        {
+            'patient': patients['9437001001'],
+            'doctor': dr_mohanty,
+            'department': departments['Cardiology'],
+            'appointment_date': date.today(),
+            'appointment_time': time(9, 0),
+            'status': 'completed',
+            'notes': 'Routine cardiac checkup',
+        },
+        {
+            'patient': patients['9437002001'],
+            'doctor': dr_patel,
+            'department': departments['Gastroenterology'],
+            'appointment_date': date.today(),
+            'appointment_time': time(10, 0),
+            'status': 'scheduled',
+            'notes': 'Follow-up visit',
+        },
+        {
+            'patient': patients['9437003001'],
+            'doctor': dr_mohanty,
+            'department': departments['Cardiology'],
+            'appointment_date': date.today(),
+            'appointment_time': time(11, 0),
+            'status': 'scheduled',
+            'notes': 'First consultation',
+        },
+    ]
+
+    appointments = []
+    for data in appointments_data:
+        appointment = Appointment(**data)
+        db.session.add(appointment)
+        appointments.append(appointment)
+        print(f"  Created appointment: {data['patient'].first_name} → {data['doctor'].user.full_name} at {data['appointment_time']}")
+
+    return appointments
+
+
 def run_seed() -> None:
     """Main seed function. Clears existing data and reseeds."""
     app = create_app('development')
@@ -90,28 +174,42 @@ def run_seed() -> None:
     with app.app_context():
         print("\nClearing existing data...")
         # Delete in reverse dependency order to avoid FK violations
+        BillingItem.query.delete()
+        BillingRecord.query.delete()
+        PatientDocument.query.delete()
+        Visit.query.delete()
+        Appointment.query.delete()
         Doctor.query.delete()
         User.query.delete()
         Department.query.delete()
+        Patient.query.delete()
         db.session.commit()
 
         print("\nSeeding departments...")
         departments = seed_departments()
-
-        # Flush so departments get IDs before doctors reference them
         db.session.flush()
 
         print("\nSeeding users...")
         users = seed_users()
-
-        # Flush so users get IDs before doctors reference them
         db.session.flush()
 
         print("\nSeeding doctors...")
         seed_doctors(users, departments)
+        db.session.flush()
+
+        # Get doctor objects for appointments
+        doctors = Doctor.query.all()
+
+        print("\nSeeding patients...")
+        patients = seed_patients()
+        db.session.flush()
+
+        print("\nSeeding appointments...")
+        seed_appointments(patients, doctors, departments)
 
         db.session.commit()
         print("\nSeed complete.")
+
 
 
 if __name__ == '__main__':

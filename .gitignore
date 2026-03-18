@@ -13,3 +13,4 @@ frontend/build/
 # misc
 .DS_Store
 *.sqlite3
+backend/uploads/
