@@ -139,3 +139,23 @@ def get_patient_visits(patient_id: int):
         return success_response(result, 200)
     except ValueError as e:
         return error_response(str(e), 404)
+    
+
+@patients_bp.route('/<int:patient_id>/documents', methods=['GET'])
+@jwt_required()
+@role_required(['doctor', 'admin'])
+def get_patient_documents(patient_id: int):
+    """
+    Get all documents for a patient.
+    GET /api/v1/patients/:id/documents
+    doctor, admin only.
+    """
+    from app.services.document_service import DocumentService
+
+    try:
+        # Verify patient exists first
+        PatientService.get_patient_by_id(patient_id)
+        documents = DocumentService.get_patient_documents(patient_id)
+        return success_response({'documents': documents}, 200)
+    except ValueError as e:
+        return error_response(str(e), 404)

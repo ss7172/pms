@@ -6,6 +6,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from app import create_app
 from app.extensions import db
+from datetime import date, time, timedelta
 
 from app.models import (
     User, Department, Doctor, Patient,
@@ -182,9 +183,7 @@ def seed_visits(appointments: list, departments: dict) -> None:
         diagnosis_code="I20.9",
         prescription="Tab. Metoprolol 25mg BD, Tab. Aspirin 75mg OD",
         follow_up_notes="Review after stress test results",
-        follow_up_date=date.today().replace(day=date.today().day + 14)
-        if date.today().day <= 14
-        else date.today(),
+        follow_up_date=date.today() + timedelta(days=14),
     )
     db.session.add(visit)
     db.session.flush()
