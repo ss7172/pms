@@ -9,6 +9,9 @@ import PatientProfile from './components/patients/PatientProfile';
 import TodaySchedule from './components/appointments/TodaySchedule';
 import BookAppointment from './components/appointments/BookAppointment';
 import VisitForm from './components/visits/VisitForm';
+import BillingList from './components/billing/BillingList';
+import InvoiceDetail from './components/billing/InvoiceDetail';
+
   
 
 function RoleBasedRedirect() {
@@ -90,6 +93,22 @@ export default function App() {
             element={
               <ProtectedRoute roles={['doctor']}>
                 <VisitForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/billing"
+            element={
+              <ProtectedRoute roles={['admin', 'front_desk']}>
+                <BillingList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/billing/:id"
+            element={
+              <ProtectedRoute roles={['admin', 'front_desk']}>
+                <InvoiceDetail />
               </ProtectedRoute>
             }
           />

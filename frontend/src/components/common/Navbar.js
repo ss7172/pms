@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { path: '/patients', label: 'Patients', roles: ['admin', 'front_desk', 'doctor'] },
   { path: '/appointments/today', label: "Today's Schedule", roles: ['admin', 'front_desk', 'doctor'] },
   { path: '/appointments/book', label: 'Book Appointment', roles: ['admin', 'front_desk'] },
+  { path: '/billing', label: 'Billing', roles: ['admin', 'front_desk'] },
 ];
 
 export default function Navbar() {
