@@ -17,9 +17,11 @@ def get_jobs() -> dict:
     """Registry of all available jobs."""
     from pipeline.jobs.revenue_analytics import RevenueAnalyticsJob
     from pipeline.jobs.operational_metrics import OperationalMetricsJob
+    from pipeline.jobs.patient_analytics import PatientAnalyticsJob
     return {
         'revenue_analytics': RevenueAnalyticsJob,
         'operational_metrics': OperationalMetricsJob,
+        'patient_analytics': PatientAnalyticsJob,
     }
 
 
