@@ -12,6 +12,7 @@ const STATUS_COLORS = {
 
 export default function BillingList() {
   const [records, setRecords] = useState([]);
+  const [total, setTotal] = useState(0);
   const [statusFilter, setStatusFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,18 +20,19 @@ export default function BillingList() {
   
   useEffect(() => {
     const fetchBilling = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams();
+    setLoading(true);
+    try {
+        const params = new URLSearchParams({ page: 1, per_page: 50 });
         if (statusFilter) params.append('status', statusFilter);
-        const data = await api.get(`/billing?${params}&per_page=50`);
-        setRecords(data.billing_records);
-      } catch (err) {
+        const data = await api.get(`/billing?${params}`);
+        setRecords(data.items);
+        setTotal(data.total);
+    } catch (err) {
         setError('Failed to load billing records');
-      } finally {
+    } finally {
         setLoading(false);
-      }
-    };
+    }
+};
     fetchBilling();
   }, [statusFilter]);
 
@@ -47,7 +49,8 @@ export default function BillingList() {
         <div style={styles.pageHeader}>
           <div>
             <h1 style={styles.title}>Billing</h1>
-            <p style={styles.subtitle}>{records.length} records</p>
+            {/* <p style={styles.subtitle}>{records.length} records</p> */}
+            <p style={styles.subtitle}>{total.toLocaleString('en-IN')} records</p>
           </div>
           {statusFilter === 'pending' && records.length > 0 && (
             <div style={styles.pendingAlert}>

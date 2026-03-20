@@ -31,20 +31,27 @@ def get_billing_records():
         return error_response(str(e), 400)
 
 
-@billing_bp.route('/<int:billing_id>', methods=['GET'])
+@billing_bp.route('', methods=['GET'])
 @jwt_required()
 @role_required(['front_desk', 'admin'])
-def get_billing_record(billing_id: int):
+def get_billing_records():
     """
-    Get single billing record with all line items.
-    GET /api/v1/billing/:id
-    front_desk, admin only.
+    GET /api/v1/billing?status=&date_from=&date_to=&page=&per_page=
     """
+    from app.utils.helpers import get_pagination_params
+    page, per_page = get_pagination_params()
+
     try:
-        record = BillingService.get_billing_record_by_id(billing_id)
-        return success_response({'billing_record': record.to_dict()}, 200)
+        result = BillingService.get_billing_records(
+            status=request.args.get('status'),
+            date_from=request.args.get('date_from'),
+            date_to=request.args.get('date_to'),
+            page=page,
+            per_page=per_page,
+        )
+        return success_response(result, 200)
     except ValueError as e:
-        return error_response(str(e), 404)
+        return error_response(str(e), 400)
 
 
 @billing_bp.route('/<int:billing_id>/items', methods=['POST'])

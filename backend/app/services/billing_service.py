@@ -16,17 +16,11 @@ class BillingService:
         status: str = None,
         date_from: str = None,
         date_to: str = None,
-    ) -> list:
+        page: int = 1,
+        per_page: int = 20,
+    ) -> dict:
         """
-        Get filtered list of billing records.
-
-        Args:
-            status: Filter by payment status
-            date_from: Filter from this date (YYYY-MM-DD)
-            date_to: Filter to this date (YYYY-MM-DD)
-
-        Returns:
-            List of billing record dicts with line items
+        Get paginated list of billing records.
         """
         query = BillingRecord.query
 
@@ -45,8 +39,13 @@ class BillingService:
             except ValueError:
                 raise ValueError("Invalid date_to format. Use YYYY-MM-DD")
 
-        records = query.order_by(BillingRecord.created_at.desc()).all()
-        return [r.to_dict() for r in records]
+        query = query.order_by(BillingRecord.created_at.desc())
+
+        from app.utils.helpers import paginate
+        result = paginate(query, page, per_page)
+        result['items'] = [r.to_dict() for r in result['items']]
+        return result
+        
 
     @staticmethod
     def get_billing_record_by_id(billing_id: int) -> BillingRecord:
